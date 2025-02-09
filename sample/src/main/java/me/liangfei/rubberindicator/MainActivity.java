@@ -1,8 +1,8 @@
-package com.liangfeizc.rubberindicator;
+package me.liangfei.rubberindicator;
 
 import android.os.Bundle;
-import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.core.view.GestureDetectorCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.Menu;
@@ -10,9 +10,8 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.liangfeizc.RubberIndicator;
+import me.liangfei.indicator.RubberIndicator;
 
 public class MainActivity extends AppCompatActivity
         implements RubberIndicator.OnMoveListener {
@@ -20,6 +19,12 @@ public class MainActivity extends AppCompatActivity
     private static final int SWIPE_MIN_DISTANCE = 120;
     private static final int SWIPE_MAX_OFF_PATH = 250;
     private static final int SWIPE_THRESHOLD_VELOCITY = 200;
+    
+    private static final String KEY_INDICATOR_POSITION = "indicator_position";
+    private static final String KEY_INDICATOR_ITEM_NUM = "indicator_item_num";
+
+    // set the number of indicator items to 5
+    private int indicatorItemNum = 7;
 
     private TextView mTextView;
     private RubberIndicator mRubberIndicator;
@@ -35,9 +40,24 @@ public class MainActivity extends AppCompatActivity
 
         mRubberIndicator = (RubberIndicator) findViewById(R.id.rubber);
         mTextView = (TextView) findViewById(R.id.focus_position);
-        mRubberIndicator.setCount(5, 2);
+        
+        // check to see if savedInstanceState is null
+        if (savedInstanceState != null) {
+            mRubberIndicator.setCount(savedInstanceState.getInt(KEY_INDICATOR_ITEM_NUM), savedInstanceState.getInt(KEY_INDICATOR_POSITION));
+        } else {
+            mRubberIndicator.setCount(indicatorItemNum, 3);
+        }
+        
+        //mRubberIndicator.setCount(5, 2);
         mRubberIndicator.setOnMoveListener(this);
         updateFocusPosition();
+    }
+    
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putInt(KEY_INDICATOR_POSITION, mRubberIndicator.getFocusPosition());
+        outState.putInt(KEY_INDICATOR_ITEM_NUM, mRubberIndicator.getChildCount());
+        super.onSaveInstanceState(outState);
     }
 
     @Override
